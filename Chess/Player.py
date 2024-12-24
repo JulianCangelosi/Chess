@@ -1,12 +1,12 @@
 from typing import Optional
 from Board import Board
-from Piece import Color
-from King import King
-from Queen import Queen
-from Bishop import Bishop
-from Rook import Rook
-from Knight import Knight
-from Pawn import Pawn
+from Chess.Piece import Color
+from Chess.pieces.King import King
+from Chess.pieces.Queen import Queen
+from Chess.pieces.Bishop import Bishop
+from Chess.pieces.Rook import Rook
+from Chess.pieces.Knight import Knight
+from Chess.pieces.Pawn import Pawn
 from enum import Enum, auto
 
 

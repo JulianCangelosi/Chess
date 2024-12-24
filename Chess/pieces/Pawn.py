@@ -1,4 +1,4 @@
-from Piece import Piece, Color, is_valid_diagonal, is_valid_file
+from Chess.Piece import Piece, Color, is_valid_diagonal, is_valid_file
 
 
 class Pawn(Piece):

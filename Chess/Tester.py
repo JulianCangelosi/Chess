@@ -1,10 +1,6 @@
 from Player import Player
 from Board import Board
-from enum import Enum, auto
-from Piece import Color
-from Pawn import Pawn
-from Knight import Knight
-from Square import Square
+from Chess.Piece import Color
 
 # def make_move(move, board):
 #     split_input = move.split(" ")

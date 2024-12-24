@@ -1,5 +1,5 @@
 from Square import Square
-from Piece import Piece, Color, is_valid_file, is_valid_rank, is_valid_diagonal
+from Chess.Piece import Piece, Color, is_valid_file, is_valid_rank, is_valid_diagonal
 
 
 class Queen(Piece):

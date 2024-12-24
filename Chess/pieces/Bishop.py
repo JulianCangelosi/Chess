@@ -1,4 +1,4 @@
-from Piece import Piece, Color
+from Chess.Piece import Piece, Color
 
 
 class Bishop(Piece):

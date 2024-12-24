@@ -9,7 +9,6 @@ class Color(Enum):
     def __str__(self) -> str:
         return "White" if self == Color.white else "Black"
 
-
 def is_valid_rank(origin: 'Square', target: 'Square') -> bool:
     return origin.get_rank() == target.get_rank()
 

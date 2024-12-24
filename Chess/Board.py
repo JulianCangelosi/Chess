@@ -1,11 +1,22 @@
 import tkinter as tk
-from tkinter import font as tkFont
 from typing import Optional
-from Piece import Color
-
-from numpy import character
+from Chess.Piece import Color
 
 from Square import Square
+
+
+def is_valid_rank(origin: Square, target: Square) -> bool:
+    return origin.get_rank() == target.get_rank()
+
+
+def is_valid_file(origin: Square, target: Square) -> bool:
+    return origin.get_file() == target.get_file()
+
+
+def is_valid_diagonal(origin: Square, target: Square) -> bool:
+    rank_difference: int = abs(origin.get_rank() - target.get_rank())
+    file_difference: int = abs(origin.get_file() - target.get_file())
+    return rank_difference == file_difference
 
 
 class Board:
@@ -24,10 +35,13 @@ class Board:
         # have an image.
         self.placeholder_image = tk.PhotoImage(width=64, height=64)
 
-    def on_click(self, rank: int, file: int) -> None:
+    def on_click(self, rank_no: int, file_no: int) -> None:
+        """
+        When the user clicks on a square, adds the
+        """
         file_ids: list[str] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
-        file_id: str = file_ids[file]
-        rank_id: str = f"{rank + 1}"
+        file_id: str = file_ids[file_no]
+        rank_id: str = f"{rank_no + 1}"
         square_id: str = f"{file_id}{rank_id}"
         self.selected_squares.append(square_id)
 
@@ -41,19 +55,8 @@ class Board:
         rank_index: int = int(rank_char) - 1
         return self.square_at_index(rank_index, file_index)
 
-    def is_valid_rank(self, origin: Square, target: Square) -> bool:
-        return origin.get_rank() == target.get_rank()
-
-    def is_valid_file(self, origin: Square, target: Square) -> bool:
-        return origin.get_file() == target.get_file()
-
-    def is_valid_diagonal(self, origin: Square, target: Square) -> bool:
-        rank_difference: int = abs(origin.get_rank() - target.get_rank())
-        file_difference: int = abs(origin.get_file() - target.get_file())
-        return rank_difference == file_difference
-
     def is_clear_rank(self, origin: Square, target: Square) -> bool:
-        is_clear: bool = self.is_valid_rank(origin, target)
+        is_clear: bool = is_valid_rank(origin, target)
         if is_clear:
             rank: int = origin.get_rank()
             for file in range(origin.get_file() + 1, target.get_file()):
@@ -67,7 +70,7 @@ class Board:
         return is_clear
 
     def is_clear_file(self, origin: Square, target: Square) -> bool:
-        is_clear: bool = self.is_valid_file(origin, target)
+        is_clear: bool = is_valid_file(origin, target)
         if is_clear:
             file: int = origin.get_file()
             for rank in range(origin.get_rank() + 1, target.get_rank()):
@@ -83,7 +86,7 @@ class Board:
     def is_clear_diagonal(self, origin: Square, target: Square) -> bool:
         rank_difference: int = abs(origin.get_rank() - target.get_rank())
 
-        if not self.is_valid_diagonal(origin, target):
+        if not is_valid_diagonal(origin, target):
             return False
 
         rank_step = 1 if target.get_rank() > origin.get_rank() else -1
@@ -103,18 +106,18 @@ class Board:
         Load images for the chess pieces and return a dictionary mapping piece types to images.
         """
         images = {
-            "white_king": tk.PhotoImage(file="White King.png"),
-            "white_queen": tk.PhotoImage(file="White Queen.png"),
-            "white_bishop": tk.PhotoImage(file="White Bishop.png"),
-            "white_knight": tk.PhotoImage(file="White Knight.png"),
-            "white_rook": tk.PhotoImage(file="White Rook.png"),
-            "white_pawn": tk.PhotoImage(file="White Pawn.png"),
-            "black_king": tk.PhotoImage(file="Black King.png"),
-            "black_queen": tk.PhotoImage(file="Black Queen.png"),
-            "black_bishop": tk.PhotoImage(file="Black Bishop.png"),
-            "black_knight": tk.PhotoImage(file="Black Knight.png"),
-            "black_rook": tk.PhotoImage(file="Black Rook.png"),
-            "black_pawn": tk.PhotoImage(file="Black Pawn.png"),
+            "white_king":   tk.PhotoImage(file="assets/White King.png"),
+            "white_queen":  tk.PhotoImage(file="assets/White Queen.png"),
+            "white_bishop": tk.PhotoImage(file="assets/White Bishop.png"),
+            "white_knight": tk.PhotoImage(file="assets/White Knight.png"),
+            "white_rook":   tk.PhotoImage(file="assets/White Rook.png"),
+            "white_pawn":   tk.PhotoImage(file="assets/White Pawn.png"),
+            "black_king":   tk.PhotoImage(file="assets/Black King.png"),
+            "black_queen":  tk.PhotoImage(file="assets/Black Queen.png"),
+            "black_bishop": tk.PhotoImage(file="assets/Black Bishop.png"),
+            "black_knight": tk.PhotoImage(file="assets/Black Knight.png"),
+            "black_rook":   tk.PhotoImage(file="assets/Black Rook.png"),
+            "black_pawn":   tk.PhotoImage(file="assets/Black Pawn.png")
         }
         return images
 

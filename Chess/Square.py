@@ -1,5 +1,5 @@
 from typing import Optional
-from Piece import Piece, Color
+from Chess.Piece import Piece, Color
 
 
 class Square:

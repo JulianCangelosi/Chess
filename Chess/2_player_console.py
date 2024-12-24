@@ -3,7 +3,7 @@ from typing import Optional
 from Player import Player
 from Board import Board
 from enum import Enum, auto
-from Piece import Color
+from Chess.Piece import Color
 
 
 class State(Enum):
