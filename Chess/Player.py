@@ -143,8 +143,8 @@ class Player:
     def make_move(self, origin_id: str, target_id: str) -> bool:
         """
         Attempts to move the Piece at the origin Square to the target square.
-        :param origin: origin square string identifier of intended move
-        :param target: target square string identifier of intended move
+        :param origin_id: origin square string identifier of intended move
+        :param target_id: target square string identifier of intended move
         :return True if move executed successfully, else false
         """
         # use the origin square's string identifier to grab the origin Square instance
@@ -174,7 +174,13 @@ class Player:
 
         return result
 
-    def can_make_en_passant(self, origin, target) -> bool:
+    def can_make_en_passant(self, origin: 'Square', target: 'Square') -> bool:
+        """
+        Checks whether this player can make the enpassant move.
+        :param origin: origin Square instance
+        :param target: target Square instance
+        :return: True if the player can make the enpassant, otherwise False
+        """
         if not origin.is_occupied() or target.is_occupied():
             return False
         if type(origin.get_occupant()) is not Pawn:
@@ -202,7 +208,13 @@ class Player:
 
         return origin_occupant.can_en_passant_to(target, target_pawn)
 
-    def make_en_passant(self, origin, target):
+    def make_en_passant(self, origin: 'Square', target: 'Square'):
+        """
+        Attempts to make the enpassant move.
+        :param origin: origin Square instance
+        :param target: target Square instance
+        :return: True if move executed successfully, otherwise False
+        """
         origin_occupant = origin.get_occupant()
         if self.color == Color.white:
             target_pawn_rank = target.get_rank() - 1
@@ -215,6 +227,12 @@ class Player:
         origin_occupant.en_passant_to(target, target_pawn)
 
     def can_make_castle(self, origin: 'Square', target: 'Square') -> bool:
+        """
+        Checks whether this player can make the castle move.
+        :param origin: origin Square instance
+        :param target: target Square instance
+        :return: True if the player can make the castle, otherwise False
+        """
         if origin is not self.king.get_position():
             return False
 
@@ -233,9 +251,15 @@ class Player:
             result = self.can_castle(False)
         return result
 
-    def make_castle(self, origin: 'Square', target: 'Square'):
+    def make_castle(self, origin: 'Square', target: 'Square') -> None:
+        """
+        Attempts to make the castle move.
+        :param origin: origin Square instance
+        :param target: target Square instance
+        :return: True if move executed successfully, otherwise False
+        """
         if origin is not self.king.get_position():
-            return False
+            return
 
         # White, kingside castle
         if self.color is Color.white and target is self.board.square_at("g1"):
@@ -256,6 +280,11 @@ class Player:
         self.king.move_to(target)
 
     def is_valid_origin(self, origin: 'Square') -> bool:
+        """
+        Checks whether the origin square is valid (i.e. whether the player has a piece at the origin).
+        :param origin: origin Square instance
+        :return: True if the origin square is valid, otherwise False
+        """
         return origin.is_occupied() and origin.get_occupant().get_color() is self.color
 
     def is_valid_target(self, target: 'Square') -> bool:
@@ -275,23 +304,22 @@ class Player:
         """
 
         # Return True if any of the following conditions are met:
-        # The intended move is clear up/down
-        if self.board.is_clear_rank(origin, target):
-            return True
-        # The intended move is clear left/right
-        if self.board.is_clear_file(origin, target):
-            return True
-        # The intended move is clear diagonal
-        if self.board.is_clear_diagonal(origin, target):
-            return True
-        # The piece to move is a knight (no need to check if path is clear since the knight moves in a 2 by 1
-        # 'L' shape and can 'hop' over other pieces)
-        if type(origin.get_occupant()) is Knight:
-            return True
-        # else, return False
-        return False
+            # The intended move is clear file (up/down)
+            # The intended move is clear rank (left/right)
+            # The intended move is clear diagonal
+            # The piece to move is a knight (since the knight moves in 'L' shape and can 'hop' over other pieces)
+        # Otherwise, return False
+
+        return (self.board.is_clear_rank(origin, target) or
+            self.board.is_clear_file(origin, target) or
+            self.board.is_clear_diagonal(origin, target) or
+            type(origin.get_occupant()) is Knight)
 
     def pawn_promotion(self):
+        """
+        Promotes a pawn to another piece type
+        :return: True if pawn promoted successfully, otherwise False
+        """
         last_rank: int = 7 if self.color is Color.white else 0
         result: bool = False
 
@@ -304,6 +332,10 @@ class Player:
         return result
 
     def prompt_promotion(self, position) -> None:
+        """
+        Prompts the player to specify what piece type to promote the pawn to using the console.
+        :param position: position of the pawn
+        """
         promotion_menu = ["Queen", "Bishop", "Knight", "Rook"]
         piece_type = input(f'{self.color}: Choose promotion piece \n({promotion_menu}): ').lower()
         new_piece = None
@@ -322,6 +354,11 @@ class Player:
         self.pieces.append(new_piece)
 
     def can_target_square(self, square) -> bool:
+        """
+        Checks whether this player can target a square.
+        :param square: square to check
+        :return: True if the square can be targeted, otherwise False
+        """
         result = False
         for piece in self.pieces:
             if piece.is_on_square() and self.can_make_move(piece.get_position(), square) and piece.can_target(square):
@@ -329,9 +366,17 @@ class Player:
         return result
 
     def is_in_check(self) -> bool:
+        """
+        Checks whether this player is in check.
+        :return: True if the player is in check, otherwise False
+        """
         return self.opponent.can_target_square(self.king.get_position())
 
-    def is_in_checkmate(self):
+    def is_in_checkmate(self) -> bool:
+        """
+        Checks whether this player is in checkmate.
+        :return: True if the player is in checkmate, otherwise False
+        """
         result = True
         legal_moves = self.legal_moves()
         # for each piece:
@@ -348,7 +393,10 @@ class Player:
                     result = False
         return result
 
-    def print_legal_moves(self):
+    def print_legal_moves(self) -> None:
+        """
+        Prints the player's legal moves to the console. (Helper method)
+        """
         self_legal_moves = self.legal_moves()
 
         for piece in self_legal_moves:
@@ -358,6 +406,11 @@ class Player:
             print()
 
     def legal_target_positions(self, piece) -> list:
+        """
+        Creates a list of a piece's legal target squares.
+        :param piece: piece instance
+        :return: list of legal target squares
+        """
         legal_target_positions = []
         for file in range(8):
             for rank in range(8):
@@ -368,16 +421,29 @@ class Player:
         return legal_target_positions
 
     def legal_moves(self) -> dict:
-        legal_moves_dict = {}
+        """
+        Creates a dictionary of all legal moves for the player.
+        :return: dictionary of legal moves
+        """
+        legal_moves_dict: dict = {}
         for piece in self.pieces:
             if piece.is_on_square():
                 legal_moves_dict[piece] = self.legal_target_positions(piece)
         return legal_moves_dict
 
     def is_white(self):
+        """
+        Checks whether this player is white.
+        :return: True if the player is white, otherwise False
+        """
         return self.color == Color.white
 
     def can_castle(self, kingside) -> bool:
+        """
+        Checks whether this player is castle.
+        :param kingside: boolean parameter determining whether to check for kingside castle
+        :return: True if the player can castle, otherwise False
+        """
         rook = self.pieces[9] if kingside else self.pieces[8]
         result = True
         target_file = 6 if kingside else 2
@@ -400,6 +466,13 @@ class Player:
         return result
 
     def is_pawn_move_by_two_ranks(self, origin, target, piece) -> bool:
+        """
+        Checks whether a move is a pawn move by two ranks.
+        :param origin: origin Square
+        :param target: target Square
+        :param piece: piece instance
+        :return: True if the move is a pawn move by two ranks, otherwise False
+        """
         origin_rank = origin.get_rank()
         origin_file = origin.get_file()
         target_rank = target.get_rank()

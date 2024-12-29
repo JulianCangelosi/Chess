@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from enum import Enum
 
-
 class Color(Enum):
     white = 0
     black = 1

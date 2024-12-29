@@ -1,19 +1,35 @@
 import tkinter as tk
 from typing import Optional
 from Chess.Piece import Color
-
 from Square import Square
 
-
 def is_valid_rank(origin: Square, target: Square) -> bool:
+    """
+    Checks whether the rank between the origin and target square is valid.
+    :param origin: The origin square
+    :param target: The target square
+    :return: True if the rank between the origin and target square is valid, False otherwise
+    """
     return origin.get_rank() == target.get_rank()
 
 
 def is_valid_file(origin: Square, target: Square) -> bool:
+    """
+    Checks whether the file between the origin and target square is valid.
+    :param origin: The origin square
+    :param target: The target square
+    :return: True if the file between the origin and target square is valid, False otherwise
+    """
     return origin.get_file() == target.get_file()
 
 
 def is_valid_diagonal(origin: Square, target: Square) -> bool:
+    """
+    Checks whether there is a valid diagonal between origin and target.
+    :param origin: The origin square
+    :param target: The target square
+    :return: True if there is a clear diagonal, False otherwise
+    """
     rank_difference: int = abs(origin.get_rank() - target.get_rank())
     file_difference: int = abs(origin.get_file() - target.get_file())
     return rank_difference == file_difference
@@ -33,11 +49,13 @@ class Board:
         self.images = self.load_images()
         # clear image for empty squares because for some reason the square dimensions are messed up if they don't
         # have an image.
-        self.placeholder_image = tk.PhotoImage(width=64, height=64)
+        self.dummy_image = tk.PhotoImage(width=64, height=64)
 
     def on_click(self, rank_no: int, file_no: int) -> None:
         """
-        When the user clicks on a square, adds the
+        When the user clicks on a square, adds the square to the selected squares
+        :param rank_no: The rank of the square that was clicked
+        :param file_no: The file of the square that was clicked
         """
         file_ids: list[str] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
         file_id: str = file_ids[file_no]
@@ -46,9 +64,19 @@ class Board:
         self.selected_squares.append(square_id)
 
     def square_at_index(self, rank: int, file: int) -> Square:
+        """
+        Returns the square at the given index
+        :param rank: The rank of the square
+        :param file: The file of the square
+        """
         return self.squares[rank][file]
 
     def square_at(self, identifier: str) -> Square:
+        """
+        Gets the square instance with the given identifier
+        :param identifier: The identifier of the square
+        :return: The square instance with the given identifier
+        """
         file_char: str = identifier[0]
         rank_char: str = identifier[1]
         file_index: int = ord(file_char) - ord('a')
@@ -56,6 +84,12 @@ class Board:
         return self.square_at_index(rank_index, file_index)
 
     def is_clear_rank(self, origin: Square, target: Square) -> bool:
+        """
+        Checks whether the rank between the origin and target square is clear.
+        :param origin: The origin square
+        :param target: The target square
+        :return: True if the rank between the origin and target square is clear, False otherwise
+        """
         is_clear: bool = is_valid_rank(origin, target)
         if is_clear:
             rank: int = origin.get_rank()
@@ -70,6 +104,12 @@ class Board:
         return is_clear
 
     def is_clear_file(self, origin: Square, target: Square) -> bool:
+        """
+        Checks whether the file between the origin and target square is clear.
+        :param origin: The origin square
+        :param target: The target square
+        :return: True if the file between the origin and target square is clear, False otherwise
+        """
         is_clear: bool = is_valid_file(origin, target)
         if is_clear:
             file: int = origin.get_file()
@@ -84,6 +124,12 @@ class Board:
         return is_clear
 
     def is_clear_diagonal(self, origin: Square, target: Square) -> bool:
+        """
+        Checks whether there is a clear diagonal between the origin and target square
+        :param origin: The origin square
+        :param target: The target square
+        :return: True if there is a clear diagonal, False otherwise
+        """
         rank_difference: int = abs(origin.get_rank() - target.get_rank())
 
         if not is_valid_diagonal(origin, target):
@@ -122,6 +168,9 @@ class Board:
         return images
 
     def update_display(self) -> None:
+        """
+        Updates the GUI display.
+        """
         light_color: str = '#F3CAAA'
         dark_color: str = '#B07F60'
 
@@ -141,7 +190,7 @@ class Board:
                     piece_image = self.images.get(image_key)
                 else:
                     # Use placeholder image for empty squares
-                    piece_image = self.placeholder_image
+                    piece_image = self.dummy_image
 
                 button = tk.Button(
                     self.board_frame,
@@ -155,9 +204,18 @@ class Board:
                 button.grid(row=rank, column=file)
 
     def piece_at(self, identifier: str) -> 'Piece':
+        """
+        Return the piece at a given identifier.
+        :param identifier: identifier of the piece
+        :return: the piece at a given identifier
+        """
         return self.square_at(identifier).get_occupant()
 
     def __str__(self) -> str:
+        """
+        returns a string representation of the chess piece.
+        :return: a string representation of the chess piece
+        """
         rank = 7
         board_str = "     a   b   c   d   e   f   g   h\n"
         board_str += "   +---+---+---+---+---+---+---+---+\n"
